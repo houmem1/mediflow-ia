@@ -171,10 +171,12 @@ document.getElementById('leadForm').addEventListener('submit', function(e){
   var data = {};
   new FormData(f).forEach(function(v,k){ data[k]=v; });
   msg.className=''; msg.textContent='';
-  // POST cross-origin vers l'Edge Function : mode no-cors (la fonction ne renvoie
-  // pas d'en-têtes CORS), donc réponse opaque — succès affiché si la requête part.
-  fetch('https://quhfiakafaixjrgsxhpf.supabase.co/functions/v1/mediflow', {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(data)})
-    .then(function(){ msg.className='ok'; msg.textContent='Merci ! Votre demande est bien enregistrée, nous vous recontactons sous 24 h.'; f.reset(); })
+  fetch('https://quhfiakafaixjrgsxhpf.supabase.co/functions/v1/mediflow', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)})
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(j.ok){ msg.className='ok'; msg.textContent='Merci ! Votre demande est bien enregistrée, nous vous recontactons sous 24 h.'; f.reset(); }
+      else { msg.className='err'; msg.textContent=j.error || 'Erreur, merci de réessayer.'; }
+    })
     .catch(function(){ msg.className='err'; msg.textContent='Erreur réseau, merci de réessayer.'; });
 });
 

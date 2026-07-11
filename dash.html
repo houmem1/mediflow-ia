@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MediFlow-IA — Dashboard directeur</title>
+<style>
+:root{--bleu:#0b4f8a;--bleu-f:#083a66;--teal:#0e9594;--fond:#f6f9fc;--txt:#1c2733;--gris:#5b6b7b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--fond);color:var(--txt);padding:24px}
+h1{color:var(--bleu-f);font-size:1.5rem;margin-bottom:4px}
+.sub{color:var(--gris);margin-bottom:24px;font-size:.92rem}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:28px}
+.kpi{background:#fff;border:1px solid #e3eaf1;border-radius:12px;padding:18px}
+.kpi b{display:block;font-size:1.6rem;color:var(--bleu)}
+.kpi.warn b{color:#c0392b}
+.kpi.ok b{color:var(--teal)}
+.kpi small{color:var(--gris)}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e3eaf1;border-radius:12px;overflow:hidden;font-size:.9rem}
+th{background:var(--bleu-f);color:#fff;text-align:left;padding:10px 12px}
+td{padding:10px 12px;border-top:1px solid #eef2f6;vertical-align:top}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{padding:3px 10px;border-radius:12px;font-weight:700;font-size:.8rem}
+.b-vert{background:#e3f6ef;color:#0a7a55}.b-orange{background:#fdf0dc;color:#b06f00}.b-rouge{background:#fde4e1;color:#c0392b}
+details summary{cursor:pointer;color:var(--bleu)}
+details ul{margin:8px 0 0 18px;color:var(--gris)}
+details li{margin-bottom:6px}
+.act{background:var(--teal);color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.act:hover{opacity:.85}
+.act:disabled{opacity:.5;cursor:default}
+#etat{background:#fff;border:1px solid #e3eaf1;border-radius:12px;padding:22px;color:var(--gris)}
+#etat.err{border-color:#f0c4be;color:#c0392b}
+@media(max-width:800px){table{display:block;overflow-x:auto}}
+</style></head><body>
+<h1>MediFlow-IA — Tableau de bord direction</h1>
+<div class="sub" id="sousTitre">Chargement…</div>
+<div id="etat">⏳ Chargement des audits…</div>
+<div id="contenu" style="display:none">
+<div class="kpis">
+<div class="kpi"><b id="kTotal">–</b><small>dossiers audités</small></div>
+<div class="kpi"><b id="kVerdicts">–</b><small>verts / oranges / rouges</small></div>
+<div class="kpi warn"><b id="kAttente">–</b><small id="kAttenteSub">à risque — en attente de revue</small></div>
+<div class="kpi ok"><b id="kTraites">–</b><small id="kTraitesSub">sécurisés — dossiers traités</small></div>
+</div>
+<table><thead><tr><th>Date</th><th>Dossier</th><th>Assureur</th><th>Verdict</th><th>Anomalies</th><th>DT à risque</th><th>Revue</th></tr></thead>
+<tbody id="lignes"></tbody></table>
+</div>
+<script>
+var API = 'https://quhfiakafaixjrgsxhpf.supabase.co/functions/v1/mediflow-dash';
+var KEY = new URL(window.location).searchParams.get('key');
+var etat = document.getElementById('etat');
+var contenu = document.getElementById('contenu');
+
+function esc(s){
+  return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function fmtDT(n){ return n.toLocaleString('fr-FR', {maximumFractionDigits:0}); }
+
+function afficherErreur(txt){
+  contenu.style.display = 'none';
+  etat.style.display = 'block';
+  etat.className = 'err';
+  etat.textContent = txt;
+}
+
+function rendre(audits){
+  var total = audits.length;
+  var nb = function(v){ return audits.filter(function(a){ return a.verdict === v; }).length; };
+  var enAttente = audits.filter(function(a){ return a.verdict !== 'vert' && a.statut_revue === 'a_traiter'; });
+  var dtEnAttente = enAttente.reduce(function(s,a){ return s + (Number(a.montant_a_risque_dt) || 0); }, 0);
+  var traites = audits.filter(function(a){ return a.statut_revue === 'traite'; });
+  var dtTraites = traites.reduce(function(s,a){ return s + (Number(a.montant_a_risque_dt) || 0); }, 0);
+
+  document.getElementById('sousTitre').textContent = total + ' dossiers audités (200 derniers affichés) · moteur de règles v2 (référentiel base de données) · actualisé à ' + new Date().toLocaleTimeString('fr-FR');
+  document.getElementById('kTotal').textContent = total;
+  document.getElementById('kVerdicts').textContent = nb('vert') + ' / ' + nb('orange') + ' / ' + nb('rouge');
+  document.getElementById('kAttente').textContent = fmtDT(dtEnAttente) + ' DT';
+  document.getElementById('kAttenteSub').textContent = 'à risque — en attente de revue (' + enAttente.length + ' dossiers)';
+  document.getElementById('kTraites').textContent = fmtDT(dtTraites) + ' DT';
+  document.getElementById('kTraitesSub').textContent = 'sécurisés — dossiers traités (' + traites.length + ')';
+
+  var rows = audits.map(function(a){
+    var anomalies = a.anomalies;
+    if(typeof anomalies === 'string'){ try { anomalies = JSON.parse(anomalies); } catch(e){ anomalies = []; } }
+    if(!Array.isArray(anomalies)){ anomalies = []; }
+    var badge = a.verdict === 'vert' ? 'b-vert' : a.verdict === 'orange' ? 'b-orange' : 'b-rouge';
+    var anoHtml = anomalies.length
+      ? '<details><summary>' + anomalies.length + ' anomalie(s)</summary><ul>' +
+        anomalies.map(function(x){ return '<li><b>' + esc(x.regle) + '</b> [' + esc(x.gravite) + '] ' + esc(x.message) + '<br><i>→ ' + esc(x.action) + '</i></li>'; }).join('') +
+        '</ul></details>'
+      : '—';
+    var action = a.statut_revue === 'a_traiter' && a.verdict !== 'vert'
+      ? '<button class="act" data-id="' + esc(a.id) + '">Marquer traité</button>'
+      : (a.statut_revue === 'traite' ? '✅ traité' : '—');
+    var dte = new Date(String(a.created_at)).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return '<tr><td>' + dte + '</td><td>' + esc(a.dossier_ref) + '</td><td>' + esc(a.assureur) + '</td><td><span class="badge ' + badge + '">' + esc(a.verdict) + '</span></td><td>' + anoHtml + '</td><td class="num">' + fmtDT(Number(a.montant_a_risque_dt) || 0) + '</td><td>' + action + '</td></tr>';
+  }).join('');
+  document.getElementById('lignes').innerHTML = rows || '<tr><td colspan="7">Aucun audit pour le moment.</td></tr>';
+
+  document.querySelectorAll('.act').forEach(function(b){
+    b.addEventListener('click', function(){
+      b.disabled = true;
+      fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'traiter', id: b.getAttribute('data-id'), key: KEY})})
+        .then(function(r){ return r.json(); })
+        .then(function(j){ if(j.ok){ charger(); } else { alert('Erreur : ' + (j.error||'')); b.disabled = false; } })
+        .catch(function(){ alert('Erreur réseau'); b.disabled = false; });
+    });
+  });
+
+  etat.style.display = 'none';
+  contenu.style.display = 'block';
+}
+
+function charger(){
+  fetch(API + '?data=1&key=' + encodeURIComponent(KEY))
+    .then(function(r){
+      if(r.status === 401){ throw new Error('cle'); }
+      if(!r.ok){ throw new Error('http'); }
+      return r.json();
+    })
+    .then(function(j){ rendre(j.audits || []); })
+    .catch(function(e){
+      afficherErreur(e.message === 'cle' ? '🔒 Clé invalide — vérifiez le paramètre ?key= de l\'URL.' : 'Erreur de chargement des données. Réessayez dans un instant.');
+    });
+}
+
+if(!KEY){
+  afficherErreur('🔒 Accès réservé — ajoutez ?key=… à l\'URL.');
+} else {
+  charger();
+}
+</script>
+</body></html>
