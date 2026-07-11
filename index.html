@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediFlow-IA — L'IA qui sécurise la trésorerie de votre clinique</title>
+<meta name="description" content="MediFlow-IA audite vos dossiers CNAM et assurances avant soumission et automatise le parcours de vos patients internationaux. Données hébergées en Tunisie.">
+<style>
+:root{--bleu:#0b4f8a;--bleu-f:#083a66;--teal:#0e9594;--ambre:#f0a202;--fond:#f6f9fc;--txt:#1c2733;--gris:#5b6b7b;--blanc:#fff;--rouge:#c0392b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--txt);background:var(--fond);line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{background:var(--blanc);border-bottom:1px solid #e3eaf1;position:sticky;top:0;z-index:10}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;max-width:1080px;margin:0 auto}
+.logo{font-size:1.25rem;font-weight:700;color:var(--bleu)}
+.logo span{color:var(--teal)}
+.btn{display:inline-block;background:var(--bleu);color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;border:none;cursor:pointer;font-size:1rem;transition:background .2s}
+.btn:hover{background:var(--bleu-f)}
+.hero{background:linear-gradient(160deg,#0b4f8a 0%,#0e6ba8 60%,#0e9594 100%);color:#fff;padding:72px 0 64px}
+.hero h1{font-size:2.4rem;line-height:1.2;max-width:720px;margin-bottom:18px}
+.hero p.lead{font-size:1.2rem;max-width:640px;opacity:.95;margin-bottom:28px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero .btn{background:#fff;color:var(--bleu)}
+.hero .btn:hover{background:#e8f1f8}
+.hero .btn.sec{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.7)}
+.trust{margin-top:26px;font-size:.92rem;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:-34px auto 0;max-width:1080px;padding:0 20px;position:relative}
+.stat{background:#fff;border-radius:12px;padding:22px;box-shadow:0 8px 24px rgba(11,79,138,.10);text-align:center}
+.stat b{display:block;font-size:1.7rem;color:var(--bleu)}
+.stat small{color:var(--gris)}
+section{padding:58px 0}
+h2{font-size:1.7rem;color:var(--bleu-f);margin-bottom:8px}
+.sub{color:var(--gris);margin-bottom:32px;max-width:680px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+.card{background:#fff;border:1px solid #e3eaf1;border-radius:12px;padding:26px}
+.card .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.card h3{font-size:1.15rem;margin-bottom:10px;color:var(--txt)}
+.card ul{list-style:none;margin-top:8px}
+.card li{padding-left:22px;position:relative;margin-bottom:8px;color:var(--gris);font-size:.95rem}
+.card li:before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.step{background:#fff;border-radius:12px;padding:24px;border:1px solid #e3eaf1}
+.step .num{width:36px;height:36px;border-radius:50%;background:var(--bleu);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;margin-bottom:12px}
+.secu{background:var(--bleu-f);color:#fff}
+.secu h2{color:#fff}
+.secu .sub{color:#c9d9e8}
+.secu .cards .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
+.secu .card h3{color:#fff}
+.secu .card li{color:#c9d9e8}
+form{background:#fff;border:1px solid #e3eaf1;border-radius:12px;padding:30px;max-width:640px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{font-size:.88rem;font-weight:600;display:block;margin:12px 0 4px}
+input,textarea,select{width:100%;padding:10px 12px;border:1px solid #cfdae5;border-radius:8px;font-size:1rem;font-family:inherit}
+input:focus,textarea:focus{outline:2px solid var(--teal);border-color:var(--teal)}
+#msg{margin-top:14px;font-weight:600;display:none}
+#msg.ok{color:var(--teal);display:block}
+#msg.err{color:var(--rouge);display:block}
+footer{background:#0a2c47;color:#a9bfd2;padding:28px 0;font-size:.9rem}
+.hp{position:absolute;left:-5000px}
+.chat{max-width:660px;background:#fff;border:1px solid #e3eaf1;border-radius:14px;overflow:hidden}
+.chead{background:var(--teal);color:#fff;padding:14px 18px;font-weight:600}
+.chead small{display:block;font-weight:400;opacity:.9;font-size:.8rem}
+.cmsgs{height:380px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#fbfdfe}
+.m{max-width:82%;padding:10px 14px;border-radius:14px;font-size:.95rem;white-space:pre-wrap}
+.m.user{align-self:flex-end;background:var(--bleu);color:#fff;border-bottom-right-radius:4px}
+.m.bot{align-self:flex-start;background:#e9f0f7;border-bottom-left-radius:4px}
+.m.typing{align-self:flex-start;background:#e9f0f7;color:var(--gris);font-style:italic}
+.cinput{display:flex;gap:10px;padding:12px;border-top:1px solid #e3eaf1}
+.cinput input{flex:1}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 12px 12px}
+.chip{background:#eef3f8;border:1px solid #d5e2ee;border-radius:20px;padding:6px 14px;font-size:.85rem;cursor:pointer;color:var(--bleu-f)}
+.chip:hover{background:#dfeaf4}
+.demo-note{font-size:.82rem;color:var(--gris);margin-top:10px}
+@media(max-width:760px){.hero h1{font-size:1.7rem}.stats{grid-template-columns:1fr}.frow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">MediFlow<span>-IA</span></div><a class="btn" href="#contact">Demander une démo</a></div></header>
+
+<div class="hero"><div class="wrap">
+<h1>Récupérez vos créances CNAM.<br>Développez votre patientèle internationale.</h1>
+<p class="lead">MediFlow-IA audite chaque dossier de remboursement avant soumission à la CNAM et aux assurances, et automatise l'accueil et le suivi de vos patients étrangers — sans changer votre logiciel de gestion.</p>
+<div class="cta"><a class="btn" href="#contact">Planifier un audit flash gratuit</a><a class="btn sec" href="#demo">💬 Tester l'agent patient en direct</a></div>
+<div class="trust">🇹🇳 Données de santé hébergées en Tunisie · Conçu pour la conformité INPDP · Secret médical respecté</div>
+</div></div>
+
+<div class="stats">
+<div class="stat"><b>100 %</b><small>des dossiers audités avant soumission</small></div>
+<div class="stat"><b>-50 %</b><small>de rejets évitables dès les premiers mois*</small></div>
+<div class="stat"><b>24/7</b><small>réponse multilingue à vos patients internationaux</small></div>
+</div>
+
+<section id="modules"><div class="wrap">
+<h2>Trois modules, un seul objectif : votre trésorerie</h2>
+<p class="sub">Une couche d'intelligence au-dessus de votre système existant. Votre HIS reste le système de référence — MediFlow-IA devient votre système de contrôle.</p>
+<div class="cards">
+<div class="card"><span class="tag">Back-office</span><h3>Audit IA des dossiers CNAM &amp; assurances</h3>
+<ul><li>Lecture automatique des bulletins, comptes rendus et ordonnances (OCR médical)</li><li>Contrôle des pièces justificatives et des accords préalables</li><li>Cohérence acte codé / durée de séjour / diagnostic</li><li>File de travail vert / orange / rouge avec montant à risque en DT</li><li>Conventions assureurs (STAR, COMAR, GAT, Maghrebia…) intégrées</li></ul></div>
+<div class="card"><span class="tag">Front-office</span><h3>Patient international &amp; tourisme médical</h3>
+<ul><li>Agent WhatsApp multilingue : arabe, français, anglais, italien</li><li>Collecte sécurisée du dossier médical via portail chiffré</li><li>Fiche pré-anesthésie structurée pour vos médecins</li><li>Suivi post-opératoire automatisé avec détection des signaux d'alerte</li><li>Escalade immédiate vers votre équipe soignante</li></ul></div>
+<div class="card"><span class="tag">Intégration</span><h3>Compatible avec votre logiciel actuel</h3>
+<ul><li>Connexion à votre HIS par API, base de données ou RPA</li><li>Démarrage possible en 2 semaines sans intégration (mode scanner)</li><li>Aucune modification de vos outils existants</li><li>Tableau de bord direction : 6 indicateurs de ROI en dinars</li></ul></div>
+</div></div></section>
+
+<section id="demo" style="padding-top:0"><div class="wrap">
+<h2>Essayez l'agent patient — démonstration en direct</h2>
+<p class="sub">Écrivez-lui en français, en arabe (même en dialecte), en anglais ou en italien : il détecte la langue, mène l'onboarding étape par étape et escalade les urgences médicales.</p>
+<div class="chat">
+<div class="chead">Yasmine — Coordinatrice patients internationaux<small>Démonstration · clinique fictive</small></div>
+<div class="cmsgs" id="cmsgs">
+<div class="m bot">👋 Bonjour ! Hello! مرحبا !
+Je suis Yasmine, votre coordinatrice. Écrivez-moi dans votre langue pour préparer votre séjour médical.</div>
+</div>
+<div class="chips">
+<span class="chip" data-t="Je souhaite une chirurgie esthétique en Tunisie">🇫🇷 Chirurgie esthétique</span>
+<span class="chip" data-t="I would like dental implants">🇬🇧 Dental implants</span>
+<span class="chip" data-t="نحب نعمل عملية تكميم">🇹🇳 عملية تكميم</span>
+</div>
+<div class="cinput"><input id="cin" placeholder="Votre message…" maxlength="500"><button class="btn" id="csend">Envoyer</button></div>
+</div>
+<p class="demo-note">⚠️ Démonstration publique : ne saisissez pas de véritables données médicales ou personnelles. En production, cet agent opère sur WhatsApp Business avec collecte de documents via portail chiffré hébergé en Tunisie.</p>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+<h2>Comment ça marche</h2>
+<p class="sub">Un déploiement progressif qui fait ses preuves sur vos propres dossiers avant tout engagement annuel.</p>
+<div class="steps">
+<div class="step"><div class="num">1</div><h3>Audit flash</h3><p>Nous rejouons vos 12 derniers mois de dossiers et chiffrons les rejets qui auraient pu être évités, en dinars.</p></div>
+<div class="step"><div class="num">2</div><h3>Pilote 60 jours</h3><p>Le système audite en parallèle de votre équipe, sans modifier vos processus. Vous comparez ses alertes aux décisions réelles de la CNAM.</p></div>
+<div class="step"><div class="num">3</div><h3>Production</h3><p>Validation humaine sur chaque dossier signalé, tableau de bord direction, et part variable indexée sur les montants réellement récupérés.</p></div>
+</div></div></section>
+
+<section class="secu"><div class="wrap">
+<h2>Souveraineté et secret médical, par conception</h2>
+<p class="sub">La conformité n'est pas une option : c'est l'architecture même du produit.</p>
+<div class="cards">
+<div class="card"><h3>Données en Tunisie</h3><ul><li>Hébergement souverain ou serveur dans votre clinique</li><li>Aucune donnée nominative envoyée à l'étranger</li><li>Conçu pour l'autorisation INPDP (loi 2004-63)</li></ul></div>
+<div class="card"><h3>Chiffrement de bout en bout</h3><ul><li>AES-256 au repos, TLS 1.3 en transit</li><li>Journal d'accès immuable sur chaque dossier</li><li>Droits d'accès par rôle (facturation, médecin, direction)</li></ul></div>
+<div class="card"><h3>L'humain décide toujours</h3><ul><li>L'IA détecte et explique, votre équipe valide</li><li>Aucune soumission automatique à la CNAM</li><li>Protocoles de suivi validés par vos médecins</li></ul></div>
+</div></div></section>
+
+<section id="contact"><div class="wrap">
+<h2>Demander une démo ou un audit flash</h2>
+<p class="sub">Laissez vos coordonnées — nous revenons vers vous sous 24 h avec une estimation du gisement de créances récupérables pour votre établissement.</p>
+<form id="leadForm">
+<div class="frow">
+<div><label>Établissement *</label><input name="clinique" required placeholder="Clinique …"></div>
+<div><label>Nombre de lits</label><input name="nb_lits" type="number" min="0" placeholder="ex. 80"></div>
+</div>
+<div class="frow">
+<div><label>Votre nom *</label><input name="nom" required></div>
+<div><label>Fonction</label><input name="fonction" placeholder="Directeur, DAF, Major…"></div>
+</div>
+<div class="frow">
+<div><label>Email *</label><input name="email" type="email" required></div>
+<div><label>Téléphone</label><input name="telephone" placeholder="+216 …"></div>
+</div>
+<label>Votre besoin</label><textarea name="message" rows="3" placeholder="Rejets CNAM, patients internationaux, les deux…"></textarea>
+<input class="hp" name="site" tabindex="-1" autocomplete="off">
+<div style="margin-top:18px"><button class="btn" type="submit">Envoyer ma demande</button></div>
+<div id="msg"></div>
+</form>
+</div></section>
+
+<footer><div class="wrap">MediFlow-IA — Optimisation IA du back-office et du parcours patient pour les cliniques privées tunisiennes.<br>* Objectif contractualisé après phase pilote sur vos données historiques.</div></footer>
+
+<script>
+document.getElementById('leadForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var f = e.target, msg = document.getElementById('msg');
+  var data = {};
+  new FormData(f).forEach(function(v,k){ data[k]=v; });
+  msg.className=''; msg.textContent='';
+  // POST cross-origin vers l'Edge Function : mode no-cors (la fonction ne renvoie
+  // pas d'en-têtes CORS), donc réponse opaque — succès affiché si la requête part.
+  fetch('https://quhfiakafaixjrgsxhpf.supabase.co/functions/v1/mediflow', {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(data)})
+    .then(function(){ msg.className='ok'; msg.textContent='Merci ! Votre demande est bien enregistrée, nous vous recontactons sous 24 h.'; f.reset(); })
+    .catch(function(){ msg.className='err'; msg.textContent='Erreur réseau, merci de réessayer.'; });
+});
+
+(function(){
+  var WEBHOOK = 'https://slhoumem.app.n8n.cloud/webhook/mediflow-patient';
+  var session = 'web-' + Math.random().toString(36).slice(2,10);
+  var box = document.getElementById('cmsgs');
+  var input = document.getElementById('cin');
+  var btn = document.getElementById('csend');
+  var busy = false;
+
+  function add(text, who){
+    var d = document.createElement('div');
+    d.className = 'm ' + who;
+    d.setAttribute('dir','auto');
+    d.textContent = text;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+    return d;
+  }
+
+  function send(){
+    var text = input.value.trim();
+    if(!text || busy) return;
+    busy = true; btn.disabled = true;
+    add(text, 'user');
+    input.value = '';
+    var t = add('Yasmine écrit…', 'bot typing');
+    fetch(WEBHOOK, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({session_id: session, message: text})})
+      .then(function(r){ return r.json(); })
+      .then(function(j){ t.remove(); add(j.reply || 'Désolée, je n\'ai pas pu répondre. Réessayez.', 'bot'); })
+      .catch(function(){ t.remove(); add('Erreur réseau — merci de réessayer dans un instant.', 'bot'); })
+      .finally(function(){ busy = false; btn.disabled = false; input.focus(); });
+  }
+
+  btn.addEventListener('click', send);
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') send(); });
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ input.value = c.getAttribute('data-t'); send(); });
+  });
+})();
+</script>
+</body>
+</html>
