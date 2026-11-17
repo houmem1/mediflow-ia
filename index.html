@@ -80,7 +80,7 @@ footer{background:#0a2c47;color:#a9bfd2;padding:28px 0;font-size:.9rem}
 <div class="hero"><div class="wrap">
 <h1>Récupérez vos créances CNAM.<br>Développez votre patientèle internationale.</h1>
 <p class="lead">MediFlow-IA audite chaque dossier de remboursement avant soumission à la CNAM et aux assurances, et automatise l'accueil et le suivi de vos patients étrangers — sans changer votre logiciel de gestion.</p>
-<div class="cta"><a class="btn" href="#contact">Planifier un audit flash gratuit</a><a class="btn sec" href="#demo">💬 Tester l'agent patient en direct</a></div>
+<div class="cta"><a class="btn" href="#contact">Planifier un audit flash gratuit</a><a class="btn sec" href="demo.html">▶ Voir la démo de l'audit</a><a class="btn sec" href="#demo">💬 Tester l'agent patient en direct</a></div>
 <div class="trust">🇹🇳 Données de santé hébergées en Tunisie · Conçu pour la conformité INPDP · Secret médical respecté</div>
 </div></div>
 
@@ -164,6 +164,7 @@ Je suis Yasmine, votre coordinatrice. Écrivez-moi dans votre langue pour prépa
 
 <footer><div class="wrap">MediFlow-IA — Optimisation IA du back-office et du parcours patient pour les cliniques privées tunisiennes.<br>* Objectif contractualisé après phase pilote sur vos données historiques.</div></footer>
 
+<script src="config.js"></script>
 <script>
 document.getElementById('leadForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -171,7 +172,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e){
   var data = {};
   new FormData(f).forEach(function(v,k){ data[k]=v; });
   msg.className=''; msg.textContent='';
-  fetch('https://quhfiakafaixjrgsxhpf.supabase.co/functions/v1/mediflow', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)})
+  fetch(window.MEDIFLOW_LEADS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)})
     .then(function(r){ return r.json(); })
     .then(function(j){
       if(j.ok){ msg.className='ok'; msg.textContent='Merci ! Votre demande est bien enregistrée, nous vous recontactons sous 24 h.'; f.reset(); }
